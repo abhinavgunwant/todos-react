@@ -1,35 +1,69 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { useState, ChangeEventHandler } from 'react';
+
+import ListTodos from './component/ListTodos';
+
+import Todo from './model/Todo';
 import './App.css'
 
-function App() {
-  const [count, setCount] = useState(0)
+const App = () => {
+    const [ todoText, setTodoText ] = useState<string>('');
+    const [ todos, setTodos ] = useState<Todo[]>([]);
 
-  return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    const toggleTodoStatus = (id: number) => {
+        const todosCopy = [...todos];
+        console.log(id);
+
+        for(let i=0; i<todos.length; ++i) {
+            if (id === todosCopy[i].id) {
+                todosCopy[i].checked = !todosCopy[i].checked;
+            }
+        }
+
+        setTodos(todosCopy);
+    }
+
+    const onAdd = () => {
+        const id = Math.random()*100
+        console.log('id', id);
+        setTodos([
+            ...todos, {
+                checked: false,
+                id,
+                text: todoText,
+            }
+        ]);
+
+        setTodoText('');
+    };
+
+    const onTextChanged: ChangeEventHandler<HTMLInputElement> = (e) => {
+        setTodoText(e.target.value);
+    };
+
+    return <>
+        <h1>TODO APP</h1>
+        <div id="entry-row">
+            <input type="" onChange={ onTextChanged } value={ todoText } />
+            <button onClick={ onAdd }>+</button>
+        </div>
+
+        <main>
+            <div className="todo-items">
+                <ListTodos
+                    checked={ false }
+                    todos={ todos }
+                    toggleTodoStatus={ toggleTodoStatus } />
+            </div>
+            
+            <div className="done-items">
+                <ListTodos
+                    checked={ true }
+                    todos={ todos }
+                    toggleTodoStatus={ toggleTodoStatus } />
+            </div>
+        </main>
+    </>;
 }
 
 export default App
+
